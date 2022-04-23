@@ -664,15 +664,19 @@
 
 					splineMesh = spline.mesh;
 
+					let v = 0;
 					for ( var i = 0; i < ARC_SEGMENTS; i ++ ) {
 
 						//var p = splineMesh.geometry.vertices[ i ];
-						console.log(splineMesh.geometry.attributes.position.array);
-						var p = splineMesh.geometry.attributes.position[i];
-						console.log(p);
+						var p = new THREE.Vector3(
+							splineMesh.geometry.attributes.position.array[v],
+							splineMesh.geometry.attributes.position.array[v + 1],
+							splineMesh.geometry.attributes.position.array[v + 2]
+						);
 						var t = i /  ( ARC_SEGMENTS - 1 );
 						spline.getPoint( t, p );
 
+						v += 3;
 					}
 
 					splineMesh.geometry.verticesNeedUpdate = true;

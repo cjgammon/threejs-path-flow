@@ -17,7 +17,7 @@ function initTexture() {
         dataArray,
         TEXTURE_WIDTH,
         height,
-        THREE.RGBFormat,
+        THREE.RGBAFormat,
         THREE.FloatType
     );
 
@@ -48,7 +48,7 @@ function modifyShader( material ) {
         shader.__modified = true;
 
         uniforms = Object.assign(shader.uniforms, {
-            texture: { value: texture },
+            //texture: { value: texture },
             pathOffset: { type: 'f', value: 0 }, // time of path curve
             pathSegment: { type: 'f', value: 1 }, // fractional length of path
             spineOffset: { type: 'f', value: 161 },
@@ -114,6 +114,8 @@ function modifyShader( material ) {
 }
 
 function initPathShader() {
+    console.log('init');
+
     customMaterial = new THREE.MeshPhongMaterial({
         // color: 0x000000
         color: 0xffffff,
@@ -147,13 +149,14 @@ function initPathShader() {
         // called when loading has errors
         function onError( error ) {
 
-            console.log( 'An error happened' );
+            console.log( '1An error happened', error );
 
         }
     );
 }
 
 function onLoad( object ) {
+    console.log('yes');
     if (orca) scene.remove(orca);
 
     orca = object;
@@ -179,10 +182,11 @@ function onLoad( object ) {
             console.log('old material', child.material);
 
             // just for smooth shading
-            var geo = new THREE.Geometry().fromBufferGeometry( child.geometry );
-            geo.mergeVertices()
+            //var geo = new THREE.Geometry().fromBufferGeometry( child.geometry );
+            var geo = child.geometry.clone();
+            var geo = THREE.BufferGeometryUtils.mergeVertices(geo);
             geo.computeVertexNormals()
-            child.geometry = new THREE.BufferGeometry().fromGeometry( geo );
+            child.geometry = geo.clone();
 
             // modifyShader( child.material );
 
@@ -202,6 +206,22 @@ function onLoad( object ) {
 
     console.log('boundingbox', bbs);
 
+    let x1 = Math.min(...bbs.map(bb => bb.min.x));
+    let y1 = Math.min(...bbs.map(bb => bb.min.y));
+    let z1 = Math.min(...bbs.map(bb => bb.min.z));
+
+    let x2 = Math.max(...bbs.map(bb => bb.max.x));
+    let y2 = Math.max(...bbs.map(bb => bb.max.y));
+    let z2 = Math.max(...bbs.map(bb => bb.max.z));
+
+    const vertices = new Float32Array( [
+        x1, y1,  z1,
+        x2, y2,  z2,
+    ] );
+
+    referenceGeometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+
+    /*
     referenceGeometry.vertices[0].set(
         Math.min(...bbs.map(bb => bb.min.x)),
         Math.min(...bbs.map(bb => bb.min.y)),
@@ -213,6 +233,7 @@ function onLoad( object ) {
         Math.max(...bbs.map(bb => bb.max.y)),
         Math.max(...bbs.map(bb => bb.max.z))
     )
+    */
 
     updateModel();
 

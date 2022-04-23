@@ -55,6 +55,7 @@
 		<script src="DragControls.js"></script>
 		<script src="OrbitControls.js"></script>
 		<script src="TransformControls.js"></script>
+		<script src="BufferGeometryUtils.js"></script>
 
 		<script src="loader.js"></script>
 		<script src="OBJLoader.js"></script>
@@ -76,8 +77,10 @@
 			var bufferUniforms = {};
 
 			var modifierObject = new THREE.Object3D();
-			var referenceGeometry = new THREE.Geometry();
-			referenceGeometry.vertices = Array(2).fill().map(_ => new THREE.Vector3());
+			var referenceGeometry = new THREE.BufferGeometry();
+
+			referenceGeometry.setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
+			//referenceGeometry.vertices = Array(2).fill().map(_ => new THREE.Vector3());
 
 			var container, stats;
 			var camera, scene, renderer;
@@ -186,7 +189,7 @@
 				//axes.position.set( - 500, - 500, - 500 );
 				//scene.add( axes );
 
-				renderer = new THREE.WebGLRenderer( { antialias: false } );
+				renderer = new THREE.WebGL1Renderer( { antialias: false } );
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				renderer.shadowMap.enabled = true;
@@ -345,12 +348,15 @@
 
 				}
 
-				var geometry = new THREE.Geometry();
+				var geometry = new THREE.BufferGeometry();
+				const _positions = new Float32Array( ARC_SEGMENTS * 3 ); // 3 vertices per point
+				geometry.setAttribute( 'position', new THREE.BufferAttribute( _positions, 3 ) );
 
 				for ( var i = 0; i < ARC_SEGMENTS; i ++ ) {
-
-					geometry.vertices.push( new THREE.Vector3() );
-
+					_positions[i++] = 0;
+					_positions[i++] = 0;
+					_positions[i++] = 0;
+					//geometry.vertices.push( new THREE.Vector3() );
 				}
 
 				var curve = new THREE.CatmullRomCurve3( positions );
@@ -509,12 +515,35 @@
 				modifierObject.updateMatrix()
 				orca.matrix.copy(modifierObject.matrix);
 
-				moo = referenceGeometry.clone().applyMatrix(modifierObject.matrix)
+				moo = referenceGeometry.clone().applyMatrix4(modifierObject.matrix)
 				console.log(moo);
 
+				const positionAttribute = moo.getAttribute( 'position' );
+
 				// use x-axis aligned
-				min = Math.min(...moo.vertices.map(v => v.x))
-				len = Math.max(...moo.vertices.map(v => v.x)) - min
+				let max;
+				for (let i = 0; i < positionAttribute.array.length; i++){
+					let point = positionAttribute.array[i];
+					if (i === 0) {
+						min = point;
+						max = point;
+					}	
+					if (i % 3 === 0) {
+						if (point < min) {
+							min = point;
+						}
+						if (point > max) {
+							max = point;	
+						}
+					}
+				}
+
+				len = max - min;
+				//min = Math.min(...positionAttribute.array.map(v => v.x))
+				//len = Math.max(...positionAttribute.array.map(v => v.x)) - min
+
+				//min = Math.min(...moo.vertices.map(v => v.x))
+				//len = Math.max(...moo.vertices.map(v => v.x)) - min
 				console.log(len, min);
 
 				updateUniform('spineOffset', -min);
@@ -637,7 +666,10 @@
 
 					for ( var i = 0; i < ARC_SEGMENTS; i ++ ) {
 
-						var p = splineMesh.geometry.vertices[ i ];
+						//var p = splineMesh.geometry.vertices[ i ];
+						console.log(splineMesh.geometry.attributes.position.array);
+						var p = splineMesh.geometry.attributes.position[i];
+						console.log(p);
 						var t = i /  ( ARC_SEGMENTS - 1 );
 						spline.getPoint( t, p );
 
@@ -697,7 +729,7 @@
 				requestAnimationFrame( animate );
 				render();
 				stats.update();
-				transformControl.update();
+				//transformControl.update();
 
 				if (gif && !gif_processing) {
 					gif.addFrame(renderer.context, { copy: true, delay: 20 });

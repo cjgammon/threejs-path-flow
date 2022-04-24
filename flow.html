@@ -403,13 +403,11 @@
 					var angle = i / 5 * Math.PI * 2;
 					controlPoints.push(
 						// new THREE.Vector3( (Math.random() - 0.5) * 1500, 0,  (Math.random() - 0.5) * 1500 )
-
 						new THREE.Vector3( Math.cos(angle) * 600, Math.random() * 800 - 300, Math.sin(angle) * 600 )
 					)
 				}
 
 				load(controlPoints)
-
 
 				/*
 				load( [ new THREE.Vector3( -150 * 4, 0, 0 ),
@@ -664,24 +662,32 @@
 
 					splineMesh = spline.mesh;
 
+					let s = 0;
 					for ( var i = 0; i < splineMesh.geometry.attributes.position.array.length; i += 3 ) {
 
 						//var p = splineMesh.geometry.vertices[ i ];
+						console.log(splineMesh.geometry.attributes.position.array[i],
+							splineMesh.geometry.attributes.position.array[i + 1],
+							splineMesh.geometry.attributes.position.array[i + 2]);
 						var p = new THREE.Vector3(
 							splineMesh.geometry.attributes.position.array[i],
 							splineMesh.geometry.attributes.position.array[i + 1],
 							splineMesh.geometry.attributes.position.array[i + 2]
 						);
 
-						var t = i /  ( ARC_SEGMENTS - 1 );
+						var t = s /  ( ARC_SEGMENTS - 1 );
 						spline.getPoint( t, p );
+						s++;
+
+						console.log('spline', spline);
 					}
 
+					console.log('splineMesh', splineMesh);
 					splineMesh.geometry.attributes.position.needsUpdate = true;
 
 				}
 
-				updateSplineTexture();
+				//updateSplineTexture();
 
 			}
 

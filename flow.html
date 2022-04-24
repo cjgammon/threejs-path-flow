@@ -359,8 +359,6 @@
 					//geometry.vertices.push( new THREE.Vector3() );
 				}
 
-				console.log('a', positions);
-
 				var curve = new THREE.CatmullRomCurve3( positions );
 				curve.curveType = 'catmullrom';
 				curve.mesh = new THREE.Line( geometry.clone(), new THREE.LineBasicMaterial( {
@@ -391,8 +389,6 @@
 					} ) );
 				curve.mesh.castShadow = true;
 				splines.chordal = curve;
-
-				console.log('b', curve.mesh.geometry.attributes.position.array);
 
 				for ( var k in splines ) {
 
@@ -566,6 +562,7 @@
 			}
 
 			function updateSplineTexture() {
+				console.log('tex', texture);
 				if (!texture) return;
 
 				splines.centripetal.arcLengthDivisions = 200;
@@ -665,14 +662,12 @@
 					var spline = splines[ k ];
 
 					splineMesh = spline.mesh;
-					console.log('0', splineMesh.geometry.attributes.position.array)
 
 					let s = 0;
 					for ( var i = 0; i < splineMesh.geometry.attributes.position.array.length; i += 3 ) {
 
 						var t = s /  ( ARC_SEGMENTS - 1 );
 						let point = spline.getPoint( t );  //this is problematic as it copies into point
-						console.log('point', point);
 
 						splineMesh.geometry.attributes.position.array[i] = point.x;
 						splineMesh.geometry.attributes.position.array[i + 1] = point.y;
@@ -685,7 +680,7 @@
 
 				}
 
-				//updateSplineTexture();
+				updateSplineTexture();
 			}
 
 			function exportSpline() {

@@ -353,7 +353,7 @@
 				geometry.setAttribute( 'position', new THREE.BufferAttribute( _positions, 3 ) );
 
 				for ( var i = 0; i < ARC_SEGMENTS; i ++ ) {
-					_positions[i++] = 1;
+					_positions[i++] = 0;
 					_positions[i++] = 0;
 					_positions[i++] = 0;
 					//geometry.vertices.push( new THREE.Vector3() );
@@ -391,6 +391,8 @@
 					} ) );
 				curve.mesh.castShadow = true;
 				splines.chordal = curve;
+
+				console.log('b', curve.mesh.geometry.attributes.position.array);
 
 				for ( var k in splines ) {
 

@@ -670,15 +670,14 @@
 					let s = 0;
 					for ( var i = 0; i < splineMesh.geometry.attributes.position.array.length; i += 3 ) {
 
-						//var p = splineMesh.geometry.vertices[ i ];
-						var p = new THREE.Vector3(
-							splineMesh.geometry.attributes.position.array[i],
-							splineMesh.geometry.attributes.position.array[i + 1],
-							splineMesh.geometry.attributes.position.array[i + 2]
-						);
-
 						var t = s /  ( ARC_SEGMENTS - 1 );
-						spline.getPoint( t, p );
+						let point = spline.getPoint( t );  //this is problematic as it copies into point
+						console.log('point', point);
+
+						splineMesh.geometry.attributes.position.array[i] = point.x;
+						splineMesh.geometry.attributes.position.array[i + 1] = point.y;
+						splineMesh.geometry.attributes.position.array[i + 2] = point.z;
+	
 						s++;
 					}
 
@@ -687,7 +686,6 @@
 				}
 
 				//updateSplineTexture();
-
 			}
 
 			function exportSpline() {

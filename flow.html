@@ -567,9 +567,9 @@
 				if (!texture) return;
 
 				splines.centripetal.arcLengthDivisions = 200;
-				splines.centripetal.updateArcLengths()
-				splineLen = splines.centripetal.getLength()
-				var pathSegment = len / splineLen // should clam max to 1
+				splines.centripetal.updateArcLengths();
+				splineLen = splines.centripetal.getLength();
+				var pathSegment = len / splineLen; // should clam max to 1
 
 				// updateUniform('spineOffset', 0);
 				updateUniform('pathSegment', pathSegment);
@@ -677,7 +677,6 @@
 						spline.getPoint( t, p );
 					}
 
-					console.log(spline);
 					splineMesh.geometry.attributes.position.needsUpdate = true;
 
 				}

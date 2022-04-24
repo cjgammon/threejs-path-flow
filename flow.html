@@ -359,6 +359,8 @@
 					//geometry.vertices.push( new THREE.Vector3() );
 				}
 
+				console.log('a', positions);
+
 				var curve = new THREE.CatmullRomCurve3( positions );
 				curve.curveType = 'catmullrom';
 				curve.mesh = new THREE.Line( geometry.clone(), new THREE.LineBasicMaterial( {
@@ -661,14 +663,12 @@
 					var spline = splines[ k ];
 
 					splineMesh = spline.mesh;
+					console.log('0', splineMesh.geometry.attributes.position.array)
 
 					let s = 0;
 					for ( var i = 0; i < splineMesh.geometry.attributes.position.array.length; i += 3 ) {
 
 						//var p = splineMesh.geometry.vertices[ i ];
-						console.log(splineMesh.geometry.attributes.position.array[i],
-							splineMesh.geometry.attributes.position.array[i + 1],
-							splineMesh.geometry.attributes.position.array[i + 2]);
 						var p = new THREE.Vector3(
 							splineMesh.geometry.attributes.position.array[i],
 							splineMesh.geometry.attributes.position.array[i + 1],
@@ -680,7 +680,6 @@
 						s++;
 					}
 
-					console.log('splineMesh', splineMesh);
 					splineMesh.geometry.attributes.position.needsUpdate = true;
 
 				}
